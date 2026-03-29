@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% block title %}
+  {% if role == 'hall_staff' %}Hall Staff{% else %}Student{% endif %}
+  Registration – TicketClassify
+{% endblock %}
+{% block body %}
+<div class="auth-wrapper">
+  <div class="auth-art auth-art-{{ role }}">
+    <div class="auth-art-grid"></div>
+    <div class="auth-art-glow"></div>
+    <a href="{{ url_for('auth.select_role') }}" class="auth-back-btn">
+      <i class="fa-solid fa-arrow-left"></i> Change Role
+    </a>
+    <div class="auth-art-content">
+      <div class="auth-logo-hex auth-logo-{{ role }}">
+        {% if role == 'hall_staff' %}<i class="fa-solid fa-helmet-safety"></i>
+        {% else %}<i class="fa-solid fa-user-graduate"></i>{% endif %}
+      </div>
+      <h1>Join TicketClassify</h1>
+      <p>{% if role == 'hall_staff' %}Create your Hall Staff account. Choose your specialization so only relevant tickets are shown to you.
+         {% else %}Create your student account and start reporting hall issues instantly.{% endif %}
+      </p>
+      {% if role == 'hall_staff' %}
+      <div style="margin-top:1.5rem;display:flex;flex-direction:column;gap:.5rem;width:100%;max-width:260px;position:relative;z-index:1">
+        {% for key, label in specializations.items() %}
+        <div style="background:rgba(255,255,255,.05);border-radius:8px;padding:.55rem .9rem;border:1px solid rgba(77,166,255,.15);font-size:.82rem;color:var(--muted);display:flex;align-items:center;gap:.5rem">
+          <i class="fa-solid
+            {% if key=='electricity' %}fa-bolt" style="color:#ffdc32
+            {% elif key=='internet' %}fa-wifi" style="color:var(--staff)
+            {% elif key=='maintenance' %}fa-screwdriver-wrench" style="color:#ffa032
+            {% elif key=='cleanliness' %}fa-broom" style="color:var(--admin)
+            {% elif key=='security' %}fa-shield-halved" style="color:var(--danger)
+            {% else %}fa-helmet-safety" style="color:var(--muted){% endif %}"></i>
+          {{ label }}
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+      <div class="auth-role-badge auth-role-badge-{{ role }}" style="margin-top:1rem">
+        <i class="fa-solid fa-circle-dot"></i>
+        {% if role == 'hall_staff' %}Hall Staff Registration
+        {% else %}Student Registration{% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="auth-form-side">
+    <div class="auth-card">
+      <div class="auth-card-tag auth-card-tag-{{ role }}">
+        {% if role == 'hall_staff' %}🪖 Hall Staff{% else %}🎓 Student{% endif %}
+      </div>
+      <h2>Create Account</h2>
+      <p class="subtitle">Must use your <strong>@diu.edu.bd</strong> email</p>
+      <div class="flash-container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% for cat, msg in messages %}
+            <div class="flash flash-{{ cat }}">
+              <i class="fa-solid fa-{% if cat=='error' %}circle-exclamation{% else %}circle-check{% endif %}"></i> {{ msg }}
+            </div>
+          {% endfor %}
+        {% endwith %}
+      </div>
+      <form method="POST" novalidate>
+        <input type="hidden" name="role" value="{{ role }}">
+        <div class="form-group">
+          <label>Full Name</label>
+          <div class="input-icon"><i class="fa-solid fa-user"></i>
+            <input type="text" name="full_name" placeholder="Your full name" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Institutional Email</label>
+          <div class="input-icon"><i class="fa-solid fa-envelope"></i>
+            <input type="email" name="email" placeholder="you@diu.edu.bd" required>
+          </div>
+        </div>
+        
+        {% if role == 'hall_staff' %}
+        <div class="form-group">
+          <label>Your Specialization <span style="color:var(--danger)">*</span></label>
+          <select name="specialization" required>
+            <option value="" disabled selected>— Select your job type —</option>
+            {% for key, label in specializations.items() %}
+            <option value="{{ key }}">
+              {% if key=='electricity' %}⚡️{% elif key=='internet' %}🌐
+              {% elif key=='maintenance' %}🔧{% elif key=='cleanliness' %}🧹
+              {% elif key=='security' %}🛡{% else %}🪖{% endif %}
+              {{ label }}
+            </option>
+            {% endfor %}
+          </select>
+          <div style="margin-top:.4rem;font-size:.78rem;color:var(--muted)">
+            <i class="fa-solid fa-circle-info"></i>
+            You will only see tickets that match your specialization.
+          </div>
+        </div>
+        {% endif %}
+
+        <div class="form-group">
+          <label>Password <span style="color:var(--muted);font-weight:400;font-size:.78rem">(min 8 chars)</span></label>
+          <div class="input-icon"><i class="fa-solid fa-lock"></i>
+            <input type="password" name="password" placeholder="Choose a strong password" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Confirm Password</label>
+          <div class="input-icon"><i class="fa-solid fa-lock"></i>
+            <input type="password" name="confirm_password" placeholder="Repeat your password" required>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-role-{{ role }}">
+          <i class="fa-solid fa-user-plus"></i> Create Account
+        </button>
+      </form>
+      <p class="auth-link">Already have an account? <a href="{{ url_for('auth.login', role=role) }}">Sign in</a></p>
+      <div class="auth-switch-role">
+        <span>Wrong role?</span>
+        <a href="{{ url_for('auth.select_role') }}">← Back to role selection</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
