@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}{{ spec_label }} Dashboard – TicketClassify{% endblock %}
+{% block body %}
+<div class="app-layout">
+  {% include "_sidebar_staff.html" %}
+  <main class="main-content">
+
+    
+    <div class="spec-banner spec-banner-{{ specialization }}">
+      <div class="spec-banner-icon">
+        <i class="fa-solid {{ spec_icon }}"></i>
+      </div>
+      <div>
+        <div class="spec-banner-title">{{ spec_label }}</div>
+        <div class="spec-banner-sub">
+          You are seeing tickets categorized as
+          <span class="badge badge-{{ specialization }}" style="margin-left:.3rem">{{ specialization }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-header" style="margin-top:1.5rem">
+      <h2>My Tickets</h2>
+      <p>Assigned to your specialization — sorted by urgency</p>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for cat, msg in messages %}<div class="flash flash-{{ cat }}" style="margin-bottom:1rem">{{ msg }}</div>{% endfor %}
+    {% endwith %}
+
+    <div class="stats-grid">
+      <div class="stat-card" style="--accent:var(--student)">
+        <div class="stat-icon" style="background:rgba(245,166,35,.15)"><i class="fa-solid fa-ticket" style="color:var(--student)"></i></div>
+        <div class="stat-num">{{ total }}</div><div class="stat-label">My Tickets</div>
+      </div>
+      <div class="stat-card" style="--accent:var(--staff)">
+        <div class="stat-icon" style="background:rgba(77,166,255,.15)"><i class="fa-solid fa-hourglass-half" style="color:var(--staff)"></i></div>
+        <div class="stat-num">{{ pending }}</div><div class="stat-label">Pending</div>
+      </div>
+      <div class="stat-card" style="--accent:#c084fc">
+        <div class="stat-icon" style="background:rgba(160,100,255,.15)"><i class="fa-solid fa-spinner" style="color:#c084fc"></i></div>
+        <div class="stat-num">{{ inprog }}</div><div class="stat-label">In Progress</div>
+      </div>
+      <div class="stat-card" style="--accent:var(--admin)">
+        <div class="stat-icon" style="background:rgba(62,207,142,.15)"><i class="fa-solid fa-circle-check" style="color:var(--admin)"></i></div>
+        <div class="stat-num">{{ resolved }}</div><div class="stat-label">Resolved</div>
+      </div>
+    </div>
+    <div class="table-card">
+      <div class="table-header">
+        <h3><i class="fa-solid fa-clipboard-list" style="color:var(--staff);margin-right:.5rem"></i>
+          Tickets for {{ spec_label }}
+        </h3>
+      </div>
+      {% if tickets %}
+      <table>
+        <thead><tr><th>#</th><th>Student</th><th>Title</th><th>AI Category</th><th>Urgency</th><th>Status</th><th>Date</th><th>Action</th></tr></thead>
+        <tbody>
+          {% for t in tickets %}
+          <tr>
+            <td style="color:var(--muted);font-size:.8rem">#{{ t.id }}</td>
+            <td>
+              <div style="font-weight:500;font-size:.88rem">{{ t.full_name }}</div>
+              <div style="color:var(--muted);font-size:.78rem">{{ t.email }}</div>
+            </td>
+            <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ t.title }}</td>
+            <td>
+              {% if t.category %}<span class="badge badge-{{ t.category }}">{{ t.category }}</span>
+              {% else %}<span style="color:var(--muted);font-size:.8rem">—</span>{% endif %}
+            </td>
+            <td><span class="badge badge-{{ t.urgency }}">{{ t.urgency }}</span></td>
+            <td><span class="badge badge-{{ t.status }}">{{ t.status.replace('_',' ') }}</span></td>
+            <td style="color:var(--muted);font-size:.85rem">{{ t.created_at.strftime('%b %d') }}</td>
+            <td>
+              <a href="{{ url_for('staff.handle_ticket', ticket_id=t.id) }}" class="btn btn-secondary btn-sm">
+                <i class="fa-solid fa-wrench"></i> Handle
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="empty-state">
+        <i class="fa-solid fa-circle-check" style="color:var(--admin)"></i>
+        <p>No tickets in your category right now. Great work!</p>
+      </div>
+      {% endif %}
+    </div>
+  </main>
+</div>
+{% endblock %}
