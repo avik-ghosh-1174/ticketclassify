@@ -1,0 +1,21 @@
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="hex hex-student"><i class="fa-solid fa-ticket"></i></div>
+    <span>TicketClassify</span>
+  </div>
+  <div class="sidebar-section">Student Menu</div>
+  <a href="{{ url_for('student.dashboard') }}"    class="nav-item"><i class="fa-solid fa-house"></i> My Dashboard</a>
+  <a href="{{ url_for('student.submit_ticket') }}" class="nav-item"><i class="fa-solid fa-plus-circle"></i> Submit Ticket</a>
+  <div class="sidebar-footer">
+    <div class="user-badge">
+      <div class="user-avatar avatar-student">{{ session.user_name[0]|upper }}</div>
+      <div class="user-info">
+        <div class="name">{{ session.user_name }}</div>
+        <div class="role-tag role-tag-student">Student</div>
+      </div>
+    </div>
+    <a href="{{ url_for('auth.logout') }}" class="btn btn-secondary btn-sm" style="width:100%;margin-top:.9rem;justify-content:center">
+      <i class="fa-solid fa-right-from-bracket"></i> Logout
+    </a>
+  </div>
+</aside>
