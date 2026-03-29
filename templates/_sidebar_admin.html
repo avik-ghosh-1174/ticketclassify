@@ -1,0 +1,23 @@
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="hex hex-admin"><i class="fa-solid fa-ticket"></i></div>
+    <span>TicketClassify</span>
+  </div>
+  <div class="sidebar-section">Admin Menu</div>
+  <a href="{{ url_for('admin.dashboard') }}"    class="nav-item"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+  <a href="{{ url_for('admin.flagged_tickets') }}" class="nav-item"><i class="fa-solid fa-flag"></i> Flagged Tickets</a>
+  <a href="{{ url_for('admin.manage_users') }}" class="nav-item"><i class="fa-solid fa-users"></i> All Users</a>
+  <a href="{{ url_for('admin.create_user') }}"  class="nav-item"><i class="fa-solid fa-user-plus"></i> Create User</a>
+  <div class="sidebar-footer">
+    <div class="user-badge">
+      <div class="user-avatar avatar-admin">{{ session.user_name[0]|upper }}</div>
+      <div class="user-info">
+        <div class="name">{{ session.user_name }}</div>
+        <div class="role-tag role-tag-admin">Administrator</div>
+      </div>
+    </div>
+    <a href="{{ url_for('auth.logout') }}" class="btn btn-secondary btn-sm" style="width:100%;margin-top:.9rem;justify-content:center">
+      <i class="fa-solid fa-right-from-bracket"></i> Logout
+    </a>
+  </div>
+</aside>
