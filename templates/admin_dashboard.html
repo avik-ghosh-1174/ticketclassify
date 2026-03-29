@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard – TicketClassify{% endblock %}
+{% block body %}
+<div class="app-layout">
+  {% include "_sidebar_admin.html" %}
+  <main class="main-content">
+    <div class="page-header"><h2>Admin Dashboard</h2><p>Full system overview with AI categorization</p></div>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for cat, msg in messages %}<div class="flash flash-{{ cat }}" style="margin-bottom:1rem">{{ msg|safe }}</div>{% endfor %}
+    {% endwith %}
+    <div class="stats-grid">
+      <div class="stat-card" style="--accent:var(--student)"><div class="stat-icon" style="background:rgba(245,166,35,.15)"><i class="fa-solid fa-ticket" style="color:var(--student)"></i></div><div class="stat-num">{{ total }}</div><div class="stat-label">Total Tickets</div></div>
+      <div class="stat-card" style="--accent:var(--staff)"><div class="stat-icon" style="background:rgba(77,166,255,.15)"><i class="fa-solid fa-hourglass-half" style="color:var(--staff)"></i></div><div class="stat-num">{{ pending }}</div><div class="stat-label">Pending</div></div>
+      <div class="stat-card" style="--accent:var(--admin)"><div class="stat-icon" style="background:rgba(62,207,142,.15)"><i class="fa-solid fa-circle-check" style="color:var(--admin)"></i></div><div class="stat-num">{{ resolved }}</div><div class="stat-label">Resolved</div></div>
+      <div class="stat-card" style="--accent:var(--staff)"><div class="stat-icon" style="background:rgba(77,166,255,.15)"><i class="fa-solid fa-user-graduate" style="color:var(--staff)"></i></div><div class="stat-num">{{ students }}</div><div class="stat-label">Students</div></div>
+      <div class="stat-card" style="--accent:var(--danger)"><div class="stat-icon" style="background:rgba(224,84,84,.15)"><i class="fa-solid fa-flag" style="color:var(--danger)"></i></div><div class="stat-num">{{ flagged }}</div><div class="stat-label">Flagged for Review</div></div>
+    </div>
+
+    {% if flagged > 0 %}
+    <div style="background:rgba(224,84,84,.1);border:1px solid rgba(224,84,84,.3);border-radius:var(--radius);padding:.9rem 1.2rem;margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between;">
+      <span><i class="fa-solid fa-triangle-exclamation" style="color:var(--danger);margin-right:.5rem"></i> <strong>{{ flagged }}</strong> ticket(s) have low AI confidence and need your review.</span>
+      <a href="{{ url_for('admin.flagged_tickets') }}" class="btn btn-danger btn-sm"><i class="fa-solid fa-flag"></i> Review Now</a>
+    </div>
+    {% endif %}
+
+    <div class="table-card">
+      <div class="table-header">
+        <h3><i class="fa-solid fa-list-check" style="color:var(--admin);margin-right:.5rem"></i>All Tickets</h3>
+        <a href="{{ url_for('admin.create_user') }}" class="btn btn-primary btn-sm"><i class="fa-solid fa-user-plus"></i> Add User</a>
+      </div>
+      {% if tickets %}
+      <table>
+        <thead><tr><th>#</th><th>Submitted By</th><th>Title</th><th>AI Category</th><th>Conf.</th><th>Urgency</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody>
+          {% for t in tickets %}
+          <tr>
+            <td style="color:var(--muted);font-size:.8rem">#{{ t.id }}</td>
+            <td><div style="font-weight:500;font-size:.88rem">{{ t.full_name }}</div><div style="color:var(--muted);font-size:.78rem">{{ t.email }}</div></td>
+            <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+              {{ t.title }}
+              {% if t.needs_review %}<span class="flag-badge" style="margin-left:.4rem"><i class="fa-solid fa-flag"></i></span>{% endif %}
+            </td>
+            <td>
+              {% if t.category %}<span class="badge badge-{{ t.category }}">{{ t.category }}</span>
+              {% else %}<span style="color:var(--muted);font-size:.8rem">—</span>{% endif %}
+            </td>
+            <td>
+              {% if t.confidence_score is not none %}
+                {% set conf = t.confidence_score|float %}
+                {% if conf >= 70 %}<span style="color:var(--admin);font-size:.82rem">{{ conf }}%</span>
+                {% elif conf >= 50 %}<span style="color:var(--student);font-size:.82rem">{{ conf }}%</span>
+                {% else %}<span style="color:var(--danger);font-size:.82rem">{{ conf }}%</span>{% endif %}
+              {% else %}—{% endif %}
+            </td>
+            <td><span class="badge badge-{{ t.urgency }}">{{ t.urgency }}</span></td>
+            <td><span class="badge badge-{{ t.status }}">{{ t.status.replace('_',' ') }}</span></td>
+            <td><a href="{{ url_for('admin.manage_ticket', ticket_id=t.id) }}" class="btn btn-secondary btn-sm"><i class="fa-solid fa-pen"></i> Manage</a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}<div class="empty-state"><i class="fa-solid fa-inbox"></i><p>No tickets yet.</p></div>{% endif %}
+    </div>
+  </main>
+</div>
+{% endblock %}
