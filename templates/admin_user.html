@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}All Users – TicketClassify{% endblock %}
+{% block body %}
+<div class="app-layout">
+  {% include "_sidebar_admin.html" %}
+  <main class="main-content">
+    <div class="page-header"><h2>All Users</h2><p>Students, Hall Staff (by specialization), and Admins</p></div>
+    <div class="table-card">
+      <div class="table-header">
+        <h3><i class="fa-solid fa-users" style="color:var(--admin);margin-right:.5rem"></i>Users ({{ users|length }})</h3>
+        <a href="{{ url_for('admin.create_user') }}" class="btn btn-primary btn-sm"><i class="fa-solid fa-user-plus"></i> Add User</a>
+      </div>
+      <table>
+        <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Role</th><th>Specialization</th><th>Joined</th></tr></thead>
+        <tbody>
+          {% for u in users %}
+          <tr>
+            <td style="color:var(--muted);font-size:.8rem">{{ u.id }}</td>
+            <td style="font-weight:500">{{ u.full_name }}</td>
+            <td style="color:var(--muted)">{{ u.email }}</td>
+            <td>
+              {% if u.role=='admin' %}<span class="badge" style="background:rgba(62,207,142,.15);color:var(--admin)">Admin</span>
+              {% elif u.role=='hall_staff' %}<span class="badge" style="background:rgba(160,100,255,.15);color:#c084fc">Hall Staff</span>
+              {% else %}<span class="badge" style="background:rgba(77,166,255,.15);color:var(--staff)">Student</span>{% endif %}
+            </td>
+            <td>
+              {% if u.specialization %}
+                <span class="badge badge-{{ u.specialization }}">
+                  {% if u.specialization=='electricity' %}⚡️
+                  {% elif u.specialization=='internet' %}🌐
+                  {% elif u.specialization=='maintenance' %}🔧
+                  {% elif u.specialization=='cleanliness' %}🧹
+                  {% elif u.specialization=='security' %}🛡
+                  {% else %}🪖{% endif %}
+                  {{ spec_labels[u.specialization] }}
+                </span>
+              {% else %}<span style="color:var(--muted);font-size:.8rem">—</span>{% endif %}
+            </td>
+            <td style="color:var(--muted);font-size:.85rem">{{ u.created_at.strftime('%b %d, %Y') }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>
+{% endblock %}
