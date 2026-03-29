@@ -1,0 +1,37 @@
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="hex hex-staff"><i class="fa-solid fa-ticket"></i></div>
+    <span>TicketClassify</span>
+  </div>
+  <div class="sidebar-section">Staff Menu</div>
+  <a href="{{ url_for('staff.dashboard') }}" class="nav-item">
+    <i class="fa-solid
+      {% if session.specialization == 'electricity' %}fa-bolt
+      {% elif session.specialization == 'internet' %}fa-wifi
+      {% elif session.specialization == 'maintenance' %}fa-screwdriver-wrench
+      {% elif session.specialization == 'cleanliness' %}fa-broom
+      {% elif session.specialization == 'security' %}fa-shield-halved
+      {% else %}fa-clipboard-list{% endif %}">
+    </i>
+    My Tickets
+  </a>
+  <div class="sidebar-footer">
+    <div class="user-badge">
+      <div class="user-avatar avatar-staff">{{ session.user_name[0]|upper }}</div>
+      <div class="user-info">
+        <div class="name">{{ session.user_name }}</div>
+        <div class="role-tag role-tag-staff">
+          {% if session.specialization == 'electricity' %}⚡️ Electrician
+          {% elif session.specialization == 'internet' %}🌐 IT Staff
+          {% elif session.specialization == 'maintenance' %}🔧 Maintenance
+          {% elif session.specialization == 'cleanliness' %}🧹 Cleaner
+          {% elif session.specialization == 'security' %}🛡 Security Guard
+          {% else %}🪖 Hall Staff{% endif %}
+        </div>
+      </div>
+    </div>
+    <a href="{{ url_for('auth.logout') }}" class="btn btn-secondary btn-sm" style="width:100%;margin-top:.9rem;justify-content:center">
+      <i class="fa-solid fa-right-from-bracket"></i> Logout
+    </a>
+  </div>
+</aside>
