@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}Flagged Tickets – TicketClassify{% endblock %}
+{% block body %}
+<div class="app-layout">
+  {% include "_sidebar_admin.html" %}
+  <main class="main-content">
+    <div class="page-header">
+      <h2>Flagged Tickets</h2>
+      <p>These tickets have low AI confidence — review and correct the category to help the AI learn</p>
+    </div>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for cat, msg in messages %}<div class="flash flash-{{ cat }}" style="margin-bottom:1rem">{{ msg|safe }}</div>{% endfor %}
+    {% endwith %}
+
+    {% if tickets %}
+    <div style="display:flex;flex-direction:column;gap:1.2rem;">
+      {% for t in tickets %}
+      <div class="detail-card">
+        <div class="detail-header" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem">
+          <div>
+            <span style="color:var(--muted);font-size:.8rem;margin-right:.5rem">#{{ t.id }}</span>
+            <strong>{{ t.title }}</strong>
+          </div>
+          <div style="display:flex;gap:.5rem;align-items:center">
+            <span class="flag-badge"><i class="fa-solid fa-flag"></i> Low Confidence ({{ t.confidence_score }}%)</span>
+            <span class="badge badge-{{ t.urgency }}">{{ t.urgency }}</span>
+          </div>
+        </div>
+        <div class="detail-body">
+          <div class="detail-row">
+            <div class="detail-label">Student</div>
+            <div>{{ t.full_name }} <span style="color:var(--muted)">({{ t.email }})</span></div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-label">Description</div>
+            <div style="font-size:.9rem;color:var(--muted);white-space:pre-wrap">{{ t.description[:200] }}{% if t.description|length > 200 %}…{% endif %}</div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-label">AI Predicted</div>
+            <div>
+              {% if t.category %}<span class="badge badge-{{ t.category }}">{{ t.category }}</span>
+              {% else %}<span style="color:var(--muted)">Not classified</span>{% endif %}
+            </div>
+          </div>
+        </div>
+        <div style="padding:1rem 1.5rem;border-top:1px solid rgba(255,255,255,.06);display:flex;gap:.75rem;align-items:center;flex-wrap:wrap">
+          <span style="font-size:.85rem;color:var(--muted)">Correct category:</span>
+          {% for cat in categories %}
+          <form method="POST" action="{{ url_for('admin.manage_ticket', ticket_id=t.id) }}" style="display:inline">
+            <input type="hidden" name="status"             value="{{ t.status }}">
+            <input type="hidden" name="category"           value="{{ cat }}">
+            <input type="hidden" name="original_category"  value="{{ t.category }}">
+            <input type="hidden" name="title_hidden"       value="{{ t.title }}">
+            <input type="hidden" name="description_hidden" value="{{ t.description }}">
+            <button type="submit" class="btn btn-secondary btn-sm"
+                    style="{% if t.category==cat %}opacity:.4;{% endif %}border-radius:20px">
+              <span class="badge badge-{{ cat }}" style="padding:0;background:none">{{ cat }}</span>
+            </button>
+          </form>
+          {% endfor %}
+          <a href="{{ url_for('admin.manage_ticket', ticket_id=t.id) }}" class="btn btn-secondary btn-sm" style="margin-left:auto">
+            <i class="fa-solid fa-pen"></i> Full Edit
+          </a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <i class="fa-solid fa-circle-check" style="color:var(--admin)"></i>
+      <p style="color:var(--admin)">No flagged tickets — the AI is confident on all current tickets!</p>
+    </div>
+    {% endif %}
+  </main>
+</div>
+{% endblock %}
