@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}My Tickets – TicketClassify{% endblock %}
+{% block body %}
+<div class="app-layout">
+  {% include "_sidebar_student.html" %}
+  <main class="main-content">
+    <div class="page-header">
+      <h2>My Tickets</h2>
+      <p>Track all your submitted support requests</p>
+    </div>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for cat, msg in messages %}
+        <div class="flash flash-{{ cat }}" style="margin-bottom:1rem">{{ msg|safe }}</div>
+      {% endfor %}
+    {% endwith %}
+    <div class="stats-grid">
+      <div class="stat-card" style="--accent:var(--student)">
+        <div class="stat-icon" style="background:rgba(245,166,35,.15)"><i class="fa-solid fa-ticket" style="color:var(--student)"></i></div>
+        <div class="stat-num">{{ total }}</div><div class="stat-label">Total Submitted</div>
+      </div>
+      <div class="stat-card" style="--accent:var(--staff)">
+        <div class="stat-icon" style="background:rgba(77,166,255,.15)"><i class="fa-solid fa-clock" style="color:var(--staff)"></i></div>
+        <div class="stat-num">{{ pending }}</div><div class="stat-label">Pending</div>
+      </div>
+      <div class="stat-card" style="--accent:var(--admin)">
+        <div class="stat-icon" style="background:rgba(62,207,142,.15)"><i class="fa-solid fa-circle-check" style="color:var(--admin)"></i></div>
+        <div class="stat-num">{{ resolved }}</div><div class="stat-label">Resolved</div>
+      </div>
+    </div>
+    <div class="table-card">
+      <div class="table-header">
+        <h3><i class="fa-solid fa-list" style="color:var(--student);margin-right:.5rem"></i>All Tickets</h3>
+        <a href="{{ url_for('student.submit_ticket') }}" class="btn btn-primary btn-sm"><i class="fa-solid fa-plus"></i> New Ticket</a>
+      </div>
+      {% if tickets %}
+      <table>
+        <thead><tr><th>#</th><th>Title</th><th>AI Category</th><th>Confidence</th><th>Urgency</th><th>Status</th><th>Date</th><th></th></tr></thead>
+        <tbody>
+          {% for t in tickets %}
+          <tr>
+            <td style="color:var(--muted);font-size:.8rem">#{{ t.id }}</td>
+            <td style="font-weight:500">{{ t.title }}</td>
+            <td>
+              {% if t.category %}
+                <span class="badge badge-{{ t.category }}">{{ t.category }}</span>
+              {% else %}<span style="color:var(--muted);font-size:.8rem">—</span>{% endif %}
+            </td>
+            <td>
+              {% if t.confidence_score is not none %}
+                {% set conf = t.confidence_score|float %}
+                {% if conf >= 70 %}<span class="badge" style="background:rgba(62,207,142,.15);color:var(--admin)">{{ conf }}%</span>
+                {% elif conf >= 50 %}<span class="badge" style="background:rgba(245,166,35,.15);color:var(--student)">{{ conf }}%</span>
+                {% else %}<span class="badge" style="background:rgba(224,84,84,.15);color:var(--danger)">{{ conf }}%</span>{% endif %}
+              {% else %}—{% endif %}
+            </td>
+            <td><span class="badge badge-{{ t.urgency }}">{{ t.urgency }}</span></td>
+            <td><span class="badge badge-{{ t.status }}">{{ t.status.replace('_',' ') }}</span></td>
+            <td style="color:var(--muted);font-size:.85rem">{{ t.created_at.strftime('%b %d, %Y') }}</td>
+            <td><a href="{{ url_for('student.view_ticket', ticket_id=t.id) }}" class="btn btn-secondary btn-sm"><i class="fa-solid fa-eye"></i></a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="empty-state"><i class="fa-solid fa-inbox"></i><p>No tickets yet. <a href="{{ url_for('student.submit_ticket') }}">Submit your first one!</a></p></div>
+      {% endif %}
+    </div>
+  </main>
+</div>
+{% endblock %}
