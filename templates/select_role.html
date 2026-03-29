@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block title %}Select Role – TicketClassify{% endblock %}
+{% block body %}
+<div class="role-page">
+
+  <div class="role-bg">
+    <div class="role-bg-grid"></div>
+    <div class="role-bg-glow role-bg-glow-1"></div>
+    <div class="role-bg-glow role-bg-glow-2"></div>
+    <div class="role-bg-glow role-bg-glow-3"></div>
+  </div>
+
+  <div class="role-container">
+
+    <div class="role-header">
+      <div class="role-logo">
+        <div class="role-logo-hex">
+          <i class="fa-solid fa-ticket"></i>
+        </div>
+      </div>
+      <h1>TicketClassify</h1>
+      <p>DIU Hall Support System — Select your role to continue</p>
+    </div>
+
+    <div class="role-cards">
+
+      <a href="{{ url_for('auth.login', role='student') }}" class="role-card role-card-student">
+        <div class="role-card-glow"></div>
+        <div class="role-card-icon">
+          <i class="fa-solid fa-user-graduate"></i>
+        </div>
+        <div class="role-card-body">
+          <h2>Student</h2>
+          <p>Submit and track your hall support tickets</p>
+          <ul class="role-perms">
+            <li><i class="fa-solid fa-check"></i> Submit tickets</li>
+            <li><i class="fa-solid fa-check"></i> Track ticket status</li>
+            <li><i class="fa-solid fa-check"></i> View history</li>
+          </ul>
+        </div>
+        <div class="role-card-footer">
+          <span>Login as Student</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </div>
+        <div class="role-card-register">
+          New student? <span onclick="event.preventDefault(); window.location='{{ url_for('auth.register') }}'">Register here</span>
+        </div>
+      </a>
+
+      <a href="{{ url_for('auth.login', role='hall_staff') }}" class="role-card role-card-staff">
+        <div class="role-card-glow"></div>
+        <div class="role-card-icon">
+          <i class="fa-solid fa-helmet-safety"></i>
+        </div>
+        <div class="role-card-body">
+          <h2>Hall Staff</h2>
+          <p>Handle and resolve student issues efficiently</p>
+          <ul class="role-perms">
+            <li><i class="fa-solid fa-check"></i> View all tickets</li>
+            <li><i class="fa-solid fa-check"></i> Update ticket status</li>
+            <li><i class="fa-solid fa-check"></i> Priority queue</li>
+          </ul>
+        </div>
+        <div class="role-card-footer">
+          <span>Login as Hall Staff</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </div>
+        <div class="role-card-register">
+          New staff? <span onclick="event.preventDefault(); window.location='{{ url_for('auth.register', role='hall_staff') }}'">Register here</span>
+        </div>
+      </a>
+
+      <a href="{{ url_for('auth.login', role='admin') }}" class="role-card role-card-admin">
+        <div class="role-card-glow"></div>
+        <div class="role-card-icon">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <div class="role-card-body">
+          <h2>Admin</h2>
+          <p>Full system control and user management</p>
+          <ul class="role-perms">
+            <li><i class="fa-solid fa-check"></i> Manage all users</li>
+            <li><i class="fa-solid fa-check"></i> Oversee all tickets</li>
+            <li><i class="fa-solid fa-check"></i> Create staff accounts</li>
+          </ul>
+        </div>
+        <div class="role-card-footer">
+          <span>Login as Admin</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </div>
+        <div class="role-card-register" style="opacity:0;pointer-events:none">‎</div>
+      </a>
+
+    </div>
+
+    <p class="role-footer-note">
+      <i class="fa-solid fa-lock"></i>
+      All accounts require a valid <strong>@diu.edu.bd</strong> institutional email
+    </p>
+
+  </div>
+</div>
+{% endblock %}
