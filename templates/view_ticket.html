@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Ticket #{{ ticket.id }} – TicketClassify{% endblock %}
+{% block body %}
+<div class="app-layout">
+  {% if session.role == 'student' %}{% include "_sidebar_student.html" %}
+  {% elif session.role == 'hall_staff' %}{% include "_sidebar_staff.html" %}
+  {% else %}{% include "_sidebar_admin.html" %}{% endif %}
+  <main class="main-content">
+    <div class="page-header">
+      <h2>Ticket #{{ ticket.id }}</h2>
+      <p>Submitted {{ ticket.created_at.strftime('%B %d, %Y at %I:%M %p') }}</p>
+    </div>
+
+    {% if ticket.category %}
+    <div class="ai-result-box">
+      <div>
+        <div class="ai-label"><i class="fa-solid fa-robot"></i> AI Category</div>
+        <div class="ai-value"><span class="badge badge-{{ ticket.category }}">{{ ticket.category }}</span>
+          {% if ticket.admin_corrected %}<span style="font-size:.72rem;color:var(--muted);margin-left:.5rem">(admin corrected)</span>{% endif %}
+        </div>
+      </div>
+      <div>
+        <div class="ai-label">Confidence</div>
+        <div class="ai-value">
+          {% set conf = ticket.confidence_score|float %}
+          {% if conf >= 70 %}<span style="color:var(--admin)">{{ conf }}%</span>
+          {% elif conf >= 50 %}<span style="color:var(--student)">{{ conf }}%</span>
+          {% else %}<span style="color:var(--danger)">{{ conf }}%</span>{% endif %}
+          <div class="confidence-bar-wrap">
+            <div class="confidence-bar {% if conf >= 70 %}conf-high{% elif conf >= 50 %}conf-mid{% else %}conf-low{% endif %}" style="width:{{ conf }}%"></div>
+          </div>
+        </div>
+      </div>
+      {% if ticket.needs_review %}
+      <div>
+        <span class="flag-badge"><i class="fa-solid fa-flag"></i> Flagged for Review</span>
+      </div>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    <div class="detail-card">
+      <div class="detail-header" style="display:flex;justify-content:space-between;align-items:center">
+        <h3>{{ ticket.title }}</h3>
+        <span class="badge badge-{{ ticket.status }}">{{ ticket.status.replace('_',' ') }}</span>
+      </div>
+      <div class="detail-body">
+        <div class="detail-row"><div class="detail-label">Description</div><div style="white-space:pre-wrap">{{ ticket.description }}</div></div>
+        <div class="detail-row"><div class="detail-label">Urgency</div><div><span class="badge badge-{{ ticket.urgency }}">{{ ticket.urgency }}</span></div></div>
+        <div class="detail-row"><div class="detail-label">Status</div><div><span class="badge badge-{{ ticket.status }}">{{ ticket.status.replace('_',' ') }}</span></div></div>
+        {% if ticket.attachment %}<div class="detail-row"><div class="detail-label">Attachment</div><div><i class="fa-solid fa-paperclip" style="color:var(--student);margin-right:.4rem"></i>{{ ticket.attachment }}</div></div>{% endif %}
+      </div>
+    </div>
+    <a href="{{ back_url }}" class="btn btn-secondary" style="width:auto"><i class="fa-solid fa-arrow-left"></i> Back</a>
+  </main>
+</div>
+{% endblock %}
