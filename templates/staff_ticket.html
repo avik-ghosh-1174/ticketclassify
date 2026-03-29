@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Handle Ticket – TicketClassify{% endblock %}
+{% block body %}
+<div class="app-layout">
+  {% include "_sidebar_staff.html" %}
+  <main class="main-content">
+    <div class="page-header">
+      <h2>Handle Ticket #{{ ticket.id }}</h2>
+      <p>Assigned to you as <strong>{{ spec_label }}</strong></p>
+    </div>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for cat, msg in messages %}<div class="flash flash-{{ cat }}" style="margin-bottom:1rem">{{ msg }}</div>{% endfor %}
+    {% endwith %}
+
+    {% if ticket.category %}
+    <div class="ai-result-box">
+      <div><div class="ai-label"><i class="fa-solid fa-robot"></i> AI Category</div>
+        <div class="ai-value"><span class="badge badge-{{ ticket.category }}">{{ ticket.category }}</span></div></div>
+      <div><div class="ai-label">Confidence</div>
+        <div class="ai-value">
+          {% set conf = ticket.confidence_score|float %}
+          {% if conf >= 70 %}<span style="color:var(--admin)">{{ conf }}%</span>
+          {% elif conf >= 50 %}<span style="color:var(--student)">{{ conf }}%</span>
+          {% else %}<span style="color:var(--danger)">{{ conf }}%</span>{% endif %}
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="detail-card">
+      <div class="detail-header" style="display:flex;justify-content:space-between;align-items:center">
+        <h3>{{ ticket.title }}</h3>
+        <span class="badge badge-{{ ticket.urgency }}">{{ ticket.urgency }}</span>
+      </div>
+      <div class="detail-body">
+        <div class="detail-row"><div class="detail-label">Student</div>
+          <div>{{ ticket.full_name }} <span style="color:var(--muted)">({{ ticket.email }})</span></div></div>
+        <div class="detail-row"><div class="detail-label">Description</div>
+          <div style="white-space:pre-wrap">{{ ticket.description }}</div></div>
+        <div class="detail-row"><div class="detail-label">Status</div>
+          <div><span class="badge badge-{{ ticket.status }}">{{ ticket.status.replace('_',' ') }}</span></div></div>
+        {% if ticket.attachment %}
+        <div class="detail-row"><div class="detail-label">Attachment</div>
+          <div><i class="fa-solid fa-paperclip" style="color:var(--staff);margin-right:.4rem"></i>{{ ticket.attachment }}</div></div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="form-card">
+      <h3><i class="fa-solid fa-arrows-rotate" style="color:var(--staff);margin-right:.5rem"></i>Update Status</h3>
+      <form method="POST">
+        <div class="form-group">
+          <label>New Status</label>
+          <select name="status">
+            <option value="pending"     {% if ticket.status=='pending'     %}selected{% endif %}>Pending</option>
+            <option value="assigned"    {% if ticket.status=='assigned'    %}selected{% endif %}>Assigned</option>
+            <option value="in_progress" {% if ticket.status=='in_progress' %}selected{% endif %}>In Progress</option>
+            <option value="resolved"    {% if ticket.status=='resolved'    %}selected{% endif %}>Resolved</option>
+          </select>
+        </div>
+        <div style="display:flex;gap:1rem">
+          <button type="submit" class="btn btn-primary" style="width:auto;padding:.75rem 2rem">
+            <i class="fa-solid fa-floppy-disk"></i> Save
+          </button>
+          <a href="{{ url_for('staff.dashboard') }}" class="btn btn-secondary">
+            <i class="fa-solid fa-arrow-left"></i> Back
+          </a>
+        </div>
+      </form>
+    </div>
+  </main>
+</div>
+{% endblock %}
