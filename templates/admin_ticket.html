@@ -12,7 +12,7 @@
       {% for cat, msg in messages %}<div class="flash flash-{{ cat }}" style="margin-bottom:1rem">{{ msg|safe }}</div>{% endfor %}
     {% endwith %}
 
-    <!-- AI Result Box -->
+    
     {% if ticket.category %}
     <div class="ai-result-box">
       <div>
@@ -53,7 +53,7 @@
     <div class="form-card">
       <h3><i class="fa-solid fa-sliders" style="color:var(--admin);margin-right:.5rem"></i>Update Ticket</h3>
       <form method="POST">
-        <!-- Hidden fields for AI learning -->
+        
         <input type="hidden" name="original_category" value="{{ ticket.category }}">
         <input type="hidden" name="title_hidden"       value="{{ ticket.title }}">
         <input type="hidden" name="description_hidden" value="{{ ticket.description }}">
