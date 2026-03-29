@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}
+  {% if role == 'admin' %}Admin{% elif role == 'hall_staff' %}Hall Staff{% else %}Student{% endif %}
+  Login – TicketClassify
+{% endblock %}
+{% block body %}
+<div class="auth-wrapper">
+  <div class="auth-art auth-art-{{ role }}">
+    <div class="auth-art-grid"></div>
+    <div class="auth-art-glow"></div>
+
+    <a href="{{ url_for('auth.select_role') }}" class="auth-back-btn">
+      <i class="fa-solid fa-arrow-left"></i> Change Role
+    </a>
+
+    <div class="auth-art-content">
+      <div class="auth-logo-hex auth-logo-{{ role }}">
+        {% if role == 'admin' %}
+          <i class="fa-solid fa-shield-halved"></i>
+        {% elif role == 'hall_staff' %}
+          <i class="fa-solid fa-helmet-safety"></i>
+        {% else %}
+          <i class="fa-solid fa-user-graduate"></i>
+        {% endif %}
+      </div>
+
+      <h1>
+        {% if role == 'admin' %}Administrator{% elif role == 'hall_staff' %}Hall Staff{% else %}Student{% endif %}
+      </h1>
+      <p>
+        {% if role == 'admin' %}
+          Full system access — manage users, oversee all tickets
+        {% elif role == 'hall_staff' %}
+          Handle student requests and keep the hall running
+        {% else %}
+          Submit issues and track their resolution in real time
+        {% endif %}
+      </p>
+
+      <div class="auth-role-badge auth-role-badge-{{ role }}">
+        <i class="fa-solid fa-circle-dot"></i>
+        {% if role == 'admin' %}Admin Portal
+        {% elif role == 'hall_staff' %}Staff Portal
+        {% else %}Student Portal{% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="auth-form-side">
+    <div class="auth-card">
+
+      <div class="auth-card-tag auth-card-tag-{{ role }}">
+        {% if role == 'admin' %}🛡 Admin
+        {% elif role == 'hall_staff' %}🪖 Hall Staff
+        {% else %}🎓 Student{% endif %}
+      </div>
+
+      <h2>Sign In</h2>
+      <p class="subtitle">Enter your DIU credentials to continue</p>
+
+      <div class="flash-container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% for cat, msg in messages %}
+            <div class="flash flash-{{ cat }}">
+              <i class="fa-solid fa-{% if cat=='error' %}circle-exclamation{% else %}circle-check{% endif %}"></i>
+              {{ msg }}
+            </div>
+          {% endfor %}
+        {% endwith %}
+      </div>
+
+      <form method="POST" novalidate>
+        <input type="hidden" name="role" value="{{ role }}">
+        <div class="form-group">
+          <label>Institutional Email</label>
+          <div class="input-icon">
+            <i class="fa-solid fa-envelope"></i>
+            <input type="email" name="email" placeholder="you@diu.edu.bd" required autocomplete="email">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <div class="input-icon">
+            <i class="fa-solid fa-lock"></i>
+            <input type="password" name="password" placeholder="••••••••" required>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-role-{{ role }}">
+          <i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In
+        </button>
+      </form>
+
+      {% if role == 'student' %}
+      <p class="auth-link">Don't have an account? <a href="{{ url_for('auth.register') }}">Register here</a></p>
+      {% else %}
+      <p class="auth-link" style="color:var(--muted)">
+        <i class="fa-solid fa-circle-info"></i>
+        {% if role == 'admin' %}Admin account is pre-configured by the system.
+        {% else %}Staff accounts are created by the Administrator.{% endif %}
+      </p>
+      {% endif %}
+
+      <div class="auth-switch-role">
+        <span>Wrong role?</span>
+        <a href="{{ url_for('auth.select_role') }}">← Go back to role selection</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}
