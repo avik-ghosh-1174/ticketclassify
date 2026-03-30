@@ -56,11 +56,11 @@ def submit_ticket():
             file.save(os.path.join(UPLOAD_FOLDER, filename))
             attachment = filename
 
-        # ── Module 2: AI Classification ──────────────
+    
         from ai_classifier import classify_ticket
         db = get_db()
         category, confidence, needs_review = classify_ticket(title, description, db.connection)
-        # ─────────────────────────────────────────────
+        
 
         cur = db.connection.cursor()
         cur.execute("""INSERT INTO tickets
