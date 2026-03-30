@@ -54,7 +54,7 @@
             </td>
             <td><span class="badge badge-{{ t.urgency }}">{{ t.urgency }}</span></td>
             <td><span class="badge badge-{{ t.status }}">{{ t.status.replace('_',' ') }}</span></td>
-            <td><a href="{{ url_for('admin.manage_ticket', ticket_id=t.id) }}" class="btn btn-secondary btn-sm"><i class="fa-solid fa-pen"></i> Manage</a></td>
+            <td><a href="{{ url_for('admin.manage_ticket', ticket_id=t.id) }}" class="btn btn-secondary btn-sm"><i class="fa-solid fa-pen"></i></a></td>
           </tr>
           {% endfor %}
         </tbody>

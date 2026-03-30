@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
 import bcrypt, re
 
-auth_bp = Blueprint("auth", name)
+auth_bp = Blueprint("auth", __name__)
 
 SPECIALIZATIONS = {
     'maintenance':  'Maintenance Staff',

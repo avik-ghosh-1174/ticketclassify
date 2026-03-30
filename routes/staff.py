@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
 
-staff_bp = Blueprint("staff", name, url_prefix="/staff")
+staff_bp = Blueprint("staff", __name__, url_prefix="/staff")
 
 SPECIALIZATION_LABELS = {
     'maintenance':  'Maintenance Staff',
