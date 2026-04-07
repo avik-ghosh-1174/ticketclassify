@@ -3,7 +3,7 @@
 {% block body %}
 <div class="role-page">
 
-  <!-- Background decoration -->
+  
   <div class="role-bg">
     <div class="role-bg-grid"></div>
     <div class="role-bg-glow role-bg-glow-1"></div>
@@ -13,7 +13,7 @@
 
   <div class="role-container">
 
-    <!-- Header -->
+    
     <div class="role-header">
       <div class="role-logo">
         <div class="role-logo-hex">
@@ -24,10 +24,10 @@
       <p>DIU Hall Support System — Select your role to continue</p>
     </div>
 
-    <!-- Role Cards -->
+    
     <div class="role-cards">
 
-      <!-- Student -->
+      
       <a href="{{ url_for('auth.login', role='student') }}" class="role-card role-card-student">
         <div class="role-card-glow"></div>
         <div class="role-card-icon">
@@ -51,7 +51,7 @@
         </div>
       </a>
 
-      <!-- Hall Staff -->
+      
       <a href="{{ url_for('auth.login', role='hall_staff') }}" class="role-card role-card-staff">
         <div class="role-card-glow"></div>
         <div class="role-card-icon">
@@ -75,7 +75,7 @@
         </div>
       </a>
 
-      <!-- Admin -->
+      
       <a href="{{ url_for('auth.login', role='admin') }}" class="role-card role-card-admin">
         <div class="role-card-glow"></div>
         <div class="role-card-icon">
@@ -97,7 +97,7 @@
         <div class="role-card-register" style="opacity:0;pointer-events:none">‎</div>
       </a>
 
-    </div><!-- /role-cards -->
+    </div>
 
     <p class="role-footer-note">
       <i class="fa-solid fa-lock"></i>

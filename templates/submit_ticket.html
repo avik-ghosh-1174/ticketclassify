@@ -36,7 +36,7 @@
         </div>
         <div class="form-group">
           <label>Attachment <span style="color:var(--muted);font-weight:400">(optional — max 5 MB)</span></label>
-          <!-- Upload zone: clicking this opens the file picker -->
+          
           <div class="upload-zone" id="uploadZone" style="cursor:pointer">
             <i class="fa-solid fa-cloud-arrow-up" style="font-size:1.6rem;display:block;margin-bottom:.4rem;color:var(--muted)"></i>
             <p id="file-label">Drag & drop or <span style="color:var(--student)">click to browse</span></p>
@@ -44,7 +44,7 @@
               Allowed: PNG, JPG, GIF, PDF, DOCX, TXT
             </p>
           </div>
-          <!-- Hidden real file input — triggered by JS -->
+          
           <input type="file" id="attachment" name="attachment"
                  accept=".png,.jpg,.jpeg,.gif,.pdf,.docx,.txt"
                  style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;overflow:hidden">
