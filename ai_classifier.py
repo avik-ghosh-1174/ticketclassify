@@ -10,7 +10,10 @@ def _tokenize(text):
     return [w for w in text.split() if len(w) > 2]
 
 def classify_ticket(title, description, db_connection):
-    
+    """
+    Classify a ticket using keyword weights from DB.
+    Returns: (category, confidence_score, needs_review)
+    """
     tokens = _tokenize(f"{title} {description}")
     if not tokens:
         return "others", 0.0, True
@@ -52,13 +55,16 @@ def classify_ticket(title, description, db_connection):
 
 
 def learn_from_correction(ticket_id, correct_category, title, description, db_connection):
-    
+    """
+    When admin corrects a category, extract tokens from the ticket and
+    increase their weight for the correct category in category_training.
+    """
     tokens = _tokenize(f"{title} {description}")
     if not tokens:
         return
 
     cur = db_connection.cursor()
-    for token in set(tokens):          
+    for token in set(tokens):         
         cur.execute("""
             INSERT INTO category_training (keyword, category, weight)
             VALUES (%s, %s, 1)

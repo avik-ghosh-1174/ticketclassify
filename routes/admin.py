@@ -4,9 +4,9 @@ import bcrypt
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
 CATEGORIES = ['maintenance','internet','electricity','cleanliness','security','others']
 SPECIALIZATION_LABELS = {
-    'maintenance': 'Maintenance Staff', 'internet': 'IT Staff',
+    'maintenance': 'Maintenance Staff', 'internet':    'IT Staff',
     'electricity': 'Electrician',       'cleanliness': 'Cleaner',
-    'security':    'Security Guard',    'others':   'General Staff',
+    'security':    'Security Guard',    'others':      'General Staff',
 }
 
 def admin_required(f):
@@ -39,10 +39,14 @@ def dashboard():
     cur.execute("SELECT COUNT(*) as c FROM users WHERE role='student'"); students = cur.fetchone()["c"]
     cur.execute("SELECT COUNT(*) as c FROM users WHERE role='hall_staff'"); staff_count = cur.fetchone()["c"]
     cur.execute("SELECT COUNT(*) as c FROM tickets WHERE needs_review=1"); flagged = cur.fetchone()["c"]
+    
+    cur.execute("""SELECT category, COUNT(*) as cnt FROM tickets
+                   WHERE category IS NOT NULL GROUP BY category ORDER BY cnt DESC""")
+    cat_stats = cur.fetchall()
     cur.close()
     return render_template("admin_dashboard.html", tickets=tickets, total=total,
                            pending=pending, resolved=resolved, students=students,
-                           staff_count=staff_count, flagged=flagged)
+                           staff_count=staff_count, flagged=flagged, cat_stats=cat_stats)
 
 @admin_bp.route("/ticket/<int:ticket_id>", methods=["GET","POST"])
 @admin_required
@@ -58,13 +62,17 @@ def manage_ticket(ticket_id):
         if corrected_cat and corrected_cat != original_cat:
             from ai_classifier import learn_from_correction
             learn_from_correction(ticket_id, corrected_cat, title, description, db.connection)
-            flash(f"Status updated & AI learned: '{original_cat}' → '{corrected_cat}'.", "success")
+            flash(f"Updated & AI learned: '{original_cat}' → '{corrected_cat}'.", "success")
         else:
             cur.execute("UPDATE tickets SET needs_review=0 WHERE id=%s", (ticket_id,))
             db.connection.commit()
             flash("Ticket updated.", "success")
+        
+        from routes.notifications import notify_student_on_update
+        notify_student_on_update(ticket_id, status, db.connection)
         cur.close()
         return redirect(url_for("admin.dashboard"))
+
     cur.execute("""SELECT t.*, u.full_name, u.email FROM tickets t
                    JOIN users u ON t.user_id=u.id WHERE t.id=%s""", (ticket_id,))
     ticket = cur.fetchone(); cur.close()
@@ -83,13 +91,36 @@ def flagged_tickets():
     tickets = cur.fetchall(); cur.close()
     return render_template("admin_flagged.html", tickets=tickets, categories=CATEGORIES)
 
+
+@admin_bp.route("/reports")
+@admin_required
+def reports():
+    db = get_db(); cur = db.connection.cursor()
+    cur.execute("""SELECT category, COUNT(*) as cnt,
+                   SUM(CASE WHEN status='resolved' THEN 1 ELSE 0 END) as resolved,
+                   SUM(CASE WHEN status='pending'  THEN 1 ELSE 0 END) as pending,
+                   AVG(confidence_score) as avg_conf
+                   FROM tickets WHERE category IS NOT NULL
+                   GROUP BY category ORDER BY cnt DESC""")
+    cat_stats = cur.fetchall()
+    cur.execute("""SELECT u.full_name, u.specialization,
+                   COUNT(t.id) as total,
+                   SUM(CASE WHEN t.status='resolved' THEN 1 ELSE 0 END) as resolved
+                   FROM users u LEFT JOIN tickets t ON t.category=u.specialization
+                   WHERE u.role='hall_staff'
+                   GROUP BY u.id ORDER BY total DESC""")
+    staff_stats = cur.fetchall()
+    cur.close()
+    return render_template("admin_reports.html", cat_stats=cat_stats,
+                           staff_stats=staff_stats, spec_labels=SPECIALIZATION_LABELS)
+
 @admin_bp.route("/users")
 @admin_required
 def manage_users():
     db = get_db(); cur = db.connection.cursor()
     cur.execute("SELECT id, full_name, email, role, specialization, created_at FROM users ORDER BY role, created_at DESC")
     users = cur.fetchall(); cur.close()
-    return render_template("admin_user.html", users=users, spec_labels=SPECIALIZATION_LABELS)
+    return render_template("admin_users.html", users=users, spec_labels=SPECIALIZATION_LABELS)
 
 @admin_bp.route("/users/create", methods=["GET","POST"])
 @admin_required
@@ -109,8 +140,8 @@ def create_user():
             cur.execute("INSERT INTO users (full_name,email,password_hash,role,specialization) VALUES (%s,%s,%s,%s,%s)",
                         (name, email, pw_hash, role, specialization))
             db.connection.commit()
-            flash(f"Account created successfully.", "success")
-            return redirect(url_for("admin.manage_users"))
+            flash("Account created successfully.", "success")
+            return redirect(url_for("admin.dashboard"))
         except Exception:
             flash("Email already exists.", "error")
         finally:
