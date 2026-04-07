@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}Reports – TicketClassify{% endblock %}
+{% block body %}
+<div class="app-layout">
+  {% include "_sidebar_admin.html" %}
+  <main class="main-content">
+    <div class="page-header"><h2>Reports</h2><p>Ticket distribution and staff performance</p></div>
+
+    <div class="detail-card" style="margin-bottom:1.5rem">
+      <div class="detail-header">
+        <h3><i class="fa-solid fa-chart-pie" style="margin-right:.4rem"></i>Tickets by Category</h3>
+      </div>
+      <div style="padding:0">
+        {% if cat_stats %}
+        <table>
+          <thead><tr><th>Category</th><th>Total</th><th>Pending</th><th>Resolved</th><th>Avg Confidence</th><th>Resolution Rate</th></tr></thead>
+          <tbody>
+            {% for c in cat_stats %}
+            <tr>
+              <td><span class="badge badge-{{ c.category }}">{{ c.category }}</span></td>
+              <td style="font-weight:600">{{ c.cnt }}</td>
+              <td><span class="badge badge-pending">{{ c.pending }}</span></td>
+              <td><span class="badge badge-resolved">{{ c.resolved }}</span></td>
+              <td>
+                {% if c.avg_conf %}
+                  {% set ac = c.avg_conf|float|round(1) %}
+                  <span style="font-weight:600;color:{% if ac>=70 %}#15803d{% elif ac>=50 %}#854d0e{% else %}#b91c1c{% endif %}">{{ ac }}%</span>
+                {% else %}—{% endif %}
+              </td>
+              <td>
+                {% if c.cnt > 0 %}
+                  {% set rate = ((c.resolved / c.cnt) * 100)|round(0)|int %}
+                  <div style="display:flex;align-items:center;gap:.5rem">
+                    <div style="flex:1;background:var(--border);border-radius:20px;height:6px;overflow:hidden">
+                      <div style="width:{{ rate }}%;background:#15803d;height:100%;border-radius:20px"></div>
+                    </div>
+                    <span style="font-size:.82rem;font-weight:600">{{ rate }}%</span>
+                  </div>
+                {% else %}—{% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state"><i class="fa-solid fa-chart-bar"></i><p>No categorized tickets yet.</p></div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="detail-card">
+      <div class="detail-header">
+        <h3><i class="fa-solid fa-users" style="margin-right:.4rem"></i>Staff Performance</h3>
+      </div>
+      <div style="padding:0">
+        {% if staff_stats %}
+        <table>
+          <thead><tr><th>Staff Member</th><th>Specialization</th><th>Tickets Assigned</th><th>Resolved</th></tr></thead>
+          <tbody>
+            {% for s in staff_stats %}
+            <tr>
+              <td style="font-weight:500">{{ s.full_name }}</td>
+              <td>
+                {% if s.specialization %}
+                  <span class="badge badge-{{ s.specialization }}">
+                    {{ spec_labels.get(s.specialization, s.specialization) }}
+                  </span>
+                {% else %}—{% endif %}
+              </td>
+              <td>{{ s.total or 0 }}</td>
+              <td><span class="badge badge-resolved">{{ s.resolved or 0 }}</span></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state"><i class="fa-solid fa-users"></i><p>No staff data yet.</p></div>
+        {% endif %}
+      </div>
+    </div>
+  </main>
+</div>
+{% endblock %}
