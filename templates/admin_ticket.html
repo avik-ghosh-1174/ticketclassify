@@ -9,16 +9,22 @@
       <p>Update status and correct AI category if needed</p>
     </div>
     {% with messages = get_flashed_messages(with_categories=true) %}
-      {% for cat, msg in messages %}<div class="flash flash-{{ cat }}" style="margin-bottom:1rem">{{ msg|safe }}</div>{% endfor %}
+      {% for cat, msg in messages %}
+        <div class="flash flash-{{ cat }}" style="margin-bottom:1rem">{{ msg|safe }}</div>
+      {% endfor %}
     {% endwith %}
 
-    
     {% if ticket.category %}
     <div class="ai-result-box">
       <div>
         <div class="ai-label"><i class="fa-solid fa-robot"></i> AI Predicted Category</div>
-        <div class="ai-value"><span class="badge badge-{{ ticket.category }}">{{ ticket.category }}</span>
-          {% if ticket.admin_corrected %}<span style="font-size:.72rem;color:var(--admin);margin-left:.5rem"><i class="fa-solid fa-graduation-cap"></i> AI learned this</span>{% endif %}
+        <div class="ai-value">
+          <span class="badge badge-{{ ticket.category }}">{{ ticket.category }}</span>
+          {% if ticket.admin_corrected %}
+            <span style="font-size:.72rem;color:var(--admin);margin-left:.5rem">
+              <i class="fa-solid fa-graduation-cap"></i> AI learned this
+            </span>
+          {% endif %}
         </div>
       </div>
       <div>
@@ -29,12 +35,18 @@
           {% elif conf >= 50 %}<span style="color:var(--student)">{{ conf }}%</span>
           {% else %}<span style="color:var(--danger)">{{ conf }}%</span>{% endif %}
           <div class="confidence-bar-wrap">
-            <div class="confidence-bar {% if conf >= 70 %}conf-high{% elif conf >= 50 %}conf-mid{% else %}conf-low{% endif %}" style="width:{{ conf }}%"></div>
+            <div class="confidence-bar
+              {% if conf >= 70 %}conf-high{% elif conf >= 50 %}conf-mid{% else %}conf-low{% endif %}"
+              style="width:{{ conf }}%"></div>
           </div>
         </div>
       </div>
       {% if ticket.needs_review %}
-      <div><span class="flag-badge"><i class="fa-solid fa-flag"></i> Low Confidence – Review Needed</span></div>
+      <div>
+        <span class="flag-badge">
+          <i class="fa-solid fa-flag"></i> Low Confidence – Review Needed
+        </span>
+      </div>
       {% endif %}
     </div>
     {% endif %}
@@ -42,21 +54,56 @@
     <div class="detail-card">
       <div class="detail-header"><h3>{{ ticket.title }}</h3></div>
       <div class="detail-body">
-        <div class="detail-row"><div class="detail-label">Submitted by</div><div>{{ ticket.full_name }} <span style="color:var(--muted)">({{ ticket.email }})</span></div></div>
-        <div class="detail-row"><div class="detail-label">Description</div><div style="white-space:pre-wrap">{{ ticket.description }}</div></div>
-        <div class="detail-row"><div class="detail-label">Urgency</div><div><span class="badge badge-{{ ticket.urgency }}">{{ ticket.urgency }}</span></div></div>
-        <div class="detail-row"><div class="detail-label">Status</div><div><span class="badge badge-{{ ticket.status }}">{{ ticket.status.replace('_',' ') }}</span></div></div>
-        {% if ticket.attachment %}<div class="detail-row"><div class="detail-label">Attachment</div><div><i class="fa-solid fa-paperclip" style="color:var(--admin);margin-right:.4rem"></i>{{ ticket.attachment }}</div></div>{% endif %}
+        <div class="detail-row">
+          <div class="detail-label">Submitted by</div>
+          <div>{{ ticket.full_name }}
+            <span style="color:var(--muted)">({{ ticket.email }})</span>
+          </div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Description</div>
+          <div style="white-space:pre-wrap">{{ ticket.description }}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Urgency</div>
+          <div><span class="badge badge-{{ ticket.urgency }}">{{ ticket.urgency }}</span></div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Status</div>
+          <div>
+            <span class="badge badge-{{ ticket.status }}">
+              {{ ticket.status.replace('_',' ') }}
+            </span>
+          </div>
+        </div>
+
+        {# ── FIX: Attachment download link ── #}
+        {% if ticket.attachment %}
+        <div class="detail-row">
+          <div class="detail-label">Attachment</div>
+          <div>
+            <a href="{{ url_for('uploaded_file', filename=ticket.attachment) }}"
+               target="_blank"
+               class="btn btn-secondary btn-sm" style="width:auto;margin:0">
+              <i class="fa-solid fa-paperclip"></i>
+              View / Download ({{ ticket.attachment.rsplit('.',1)[-1].upper() }})
+            </a>
+          </div>
+        </div>
+        {% endif %}
       </div>
     </div>
 
     <div class="form-card">
-      <h3><i class="fa-solid fa-sliders" style="color:var(--admin);margin-right:.5rem"></i>Update Ticket</h3>
+      <h3>
+        <i class="fa-solid fa-sliders" style="color:var(--admin);margin-right:.5rem"></i>
+        Update Ticket
+      </h3>
       <form method="POST">
-        
         <input type="hidden" name="original_category" value="{{ ticket.category }}">
         <input type="hidden" name="title_hidden"       value="{{ ticket.title }}">
         <input type="hidden" name="description_hidden" value="{{ ticket.description }}">
+
         <div class="form-row">
           <div class="form-group">
             <label>Status</label>
@@ -70,22 +117,33 @@
           <div class="form-group">
             <label>
               AI Category
-              <span style="color:var(--muted);font-weight:400;font-size:.75rem">(change to teach the AI)</span>
+              <span style="color:var(--muted);font-weight:400;font-size:.75rem">
+                (change to teach the AI)
+              </span>
             </label>
             <select name="category">
               {% for cat in categories %}
-              <option value="{{ cat }}" {% if ticket.category==cat %}selected{% endif %}>{{ cat|title }}</option>
+              <option value="{{ cat }}" {% if ticket.category==cat %}selected{% endif %}>
+                {{ cat|title }}
+              </option>
               {% endfor %}
             </select>
           </div>
         </div>
-        <div style="background:rgba(62,207,142,.07);border:1px solid rgba(62,207,142,.2);border-radius:var(--radius);padding:.75rem 1rem;margin-bottom:1rem;font-size:.85rem;color:var(--muted);">
-          <i class="fa-solid fa-lightbulb" style="color:var(--admin);margin-right:.4rem"></i>
-          If the AI category is wrong, select the correct one above. The system will <strong style="color:var(--white)">learn from your correction</strong> and improve future classifications.
+
+        <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:var(--radius);padding:.75rem 1rem;margin-bottom:1rem;font-size:.85rem;color:#15803d;">
+          <i class="fa-solid fa-lightbulb" style="margin-right:.4rem"></i>
+          If the AI category is wrong, select the correct one. The system will
+          <strong>learn from your correction</strong> and improve future classifications.
         </div>
+
         <div style="display:flex;gap:1rem">
-          <button type="submit" class="btn btn-primary" style="width:auto;padding:.75rem 2rem"><i class="fa-solid fa-floppy-disk"></i> Save & Learn</button>
-          <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary"><i class="fa-solid fa-arrow-left"></i> Back</a>
+          <button type="submit" class="btn btn-primary" style="width:auto;padding:.75rem 2rem">
+            <i class="fa-solid fa-floppy-disk"></i> Save & Learn
+          </button>
+          <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary">
+            <i class="fa-solid fa-arrow-left"></i> Back
+          </a>
         </div>
       </form>
     </div>

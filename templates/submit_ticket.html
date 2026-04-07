@@ -6,20 +6,22 @@
   <main class="main-content">
     <div class="page-header">
       <h2>Submit a Ticket</h2>
-      <p>Describe your issue and we'll route it to the right team</p>
+      <p>Describe your issue — AI will categorize and route it automatically</p>
     </div>
     <div class="form-card">
-      <h3><i class="fa-solid fa-pen-to-square" style="color:var(--student);margin-right:.5rem"></i>New Support Ticket
-      </h3>
-      <form method="POST" enctype="multipart/form-data" novalidate>
+      <h3><i class="fa-solid fa-pen-to-square" style="color:var(--student);margin-right:.5rem"></i>New Support Ticket</h3>
+      <form method="POST" action="{{ url_for('student.submit_ticket') }}"
+            enctype="multipart/form-data" novalidate>
         <div class="form-group">
           <label>Ticket Title *</label>
-          <input type="text" name="title" placeholder="e.g. Broken light in corridor 3B" required maxlength="200">
+          <input type="text" name="title"
+                 placeholder="e.g. Broken light in corridor 3B" required maxlength="200">
         </div>
         <div class="form-group">
           <label>Description *</label>
           <textarea name="description"
-            placeholder="Provide as much detail as possible — location, time it started, severity…" required></textarea>
+                    placeholder="Describe the issue in detail — location, when it started, how severe…"
+                    required></textarea>
         </div>
         <div class="form-row">
           <div class="form-group">
@@ -32,10 +34,26 @@
             </select>
           </div>
         </div>
-        
+        <div class="form-group">
+          <label>Attachment <span style="color:var(--muted);font-weight:400">(optional — max 5 MB)</span></label>
+          <!-- Upload zone: clicking this opens the file picker -->
+          <div class="upload-zone" id="uploadZone" style="cursor:pointer">
+            <i class="fa-solid fa-cloud-arrow-up" style="font-size:1.6rem;display:block;margin-bottom:.4rem;color:var(--muted)"></i>
+            <p id="file-label">Drag & drop or <span style="color:var(--student)">click to browse</span></p>
+            <p style="font-size:.75rem;color:var(--muted);margin-top:.3rem">
+              Allowed: PNG, JPG, GIF, PDF, DOCX, TXT
+            </p>
+          </div>
+          <!-- Hidden real file input — triggered by JS -->
+          <input type="file" id="attachment" name="attachment"
+                 accept=".png,.jpg,.jpeg,.gif,.pdf,.docx,.txt"
+                 style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;overflow:hidden">
+        </div>
         <div style="display:flex;gap:1rem;margin-top:.5rem">
-          <button type="submit" class="btn btn-primary" style="width:auto;padding:.75rem 2rem"><i
-              class="fa-solid fa-paper-plane"></i> Submit</button>
+          <button type="submit" class="btn btn-primary"
+                  style="width:auto;padding:.75rem 2rem">
+            <i class="fa-solid fa-paper-plane"></i> Submit Ticket
+          </button>
           <a href="{{ url_for('student.dashboard') }}" class="btn btn-secondary">Cancel</a>
         </div>
       </form>

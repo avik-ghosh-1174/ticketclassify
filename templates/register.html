@@ -74,7 +74,7 @@
             <input type="email" name="email" placeholder="you@diu.edu.bd" required>
           </div>
         </div>
-        
+
         {% if role == 'hall_staff' %}
         <div class="form-group">
           <label>Your Specialization <span style="color:var(--danger)">*</span></label>
@@ -82,9 +82,9 @@
             <option value="" disabled selected>— Select your job type —</option>
             {% for key, label in specializations.items() %}
             <option value="{{ key }}">
-              {% if key=='electricity' %}⚡️{% elif key=='internet' %}🌐
+              {% if key=='electricity' %}⚡{% elif key=='internet' %}🌐
               {% elif key=='maintenance' %}🔧{% elif key=='cleanliness' %}🧹
-              {% elif key=='security' %}🛡{% else %}🪖{% endif %}
+              {% elif key=='security' %}🛡️{% else %}🪖{% endif %}
               {{ label }}
             </option>
             {% endfor %}

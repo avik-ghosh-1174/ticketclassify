@@ -15,8 +15,11 @@
     <div class="ai-result-box">
       <div>
         <div class="ai-label"><i class="fa-solid fa-robot"></i> AI Category</div>
-        <div class="ai-value"><span class="badge badge-{{ ticket.category }}">{{ ticket.category }}</span>
-          {% if ticket.admin_corrected %}<span style="font-size:.72rem;color:var(--muted);margin-left:.5rem">(admin corrected)</span>{% endif %}
+        <div class="ai-value">
+          <span class="badge badge-{{ ticket.category }}">{{ ticket.category }}</span>
+          {% if ticket.admin_corrected %}
+            <span style="font-size:.72rem;color:var(--muted);margin-left:.5rem">(admin corrected)</span>
+          {% endif %}
         </div>
       </div>
       <div>
@@ -27,14 +30,14 @@
           {% elif conf >= 50 %}<span style="color:var(--student)">{{ conf }}%</span>
           {% else %}<span style="color:var(--danger)">{{ conf }}%</span>{% endif %}
           <div class="confidence-bar-wrap">
-            <div class="confidence-bar {% if conf >= 70 %}conf-high{% elif conf >= 50 %}conf-mid{% else %}conf-low{% endif %}" style="width:{{ conf }}%"></div>
+            <div class="confidence-bar
+              {% if conf >= 70 %}conf-high{% elif conf >= 50 %}conf-mid{% else %}conf-low{% endif %}"
+              style="width:{{ conf }}%"></div>
           </div>
         </div>
       </div>
       {% if ticket.needs_review %}
-      <div>
-        <span class="flag-badge"><i class="fa-solid fa-flag"></i> Flagged for Review</span>
-      </div>
+      <div><span class="flag-badge"><i class="fa-solid fa-flag"></i> Flagged for Review</span></div>
       {% endif %}
     </div>
     {% endif %}
@@ -45,13 +48,57 @@
         <span class="badge badge-{{ ticket.status }}">{{ ticket.status.replace('_',' ') }}</span>
       </div>
       <div class="detail-body">
-        <div class="detail-row"><div class="detail-label">Description</div><div style="white-space:pre-wrap">{{ ticket.description }}</div></div>
-        <div class="detail-row"><div class="detail-label">Urgency</div><div><span class="badge badge-{{ ticket.urgency }}">{{ ticket.urgency }}</span></div></div>
-        <div class="detail-row"><div class="detail-label">Status</div><div><span class="badge badge-{{ ticket.status }}">{{ ticket.status.replace('_',' ') }}</span></div></div>
-        {% if ticket.attachment %}<div class="detail-row"><div class="detail-label">Attachment</div><div><i class="fa-solid fa-paperclip" style="color:var(--student);margin-right:.4rem"></i>{{ ticket.attachment }}</div></div>{% endif %}
+        <div class="detail-row">
+          <div class="detail-label">Description</div>
+          <div style="white-space:pre-wrap">{{ ticket.description }}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Urgency</div>
+          <div><span class="badge badge-{{ ticket.urgency }}">{{ ticket.urgency }}</span></div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Status</div>
+          <div><span class="badge badge-{{ ticket.status }}">{{ ticket.status.replace('_',' ') }}</span></div>
+        </div>
+        {% if ticket.attachment %}
+        <div class="detail-row">
+          <div class="detail-label">Attachment</div>
+          <div>
+            <a href="{{ url_for('uploaded_file', filename=ticket.attachment) }}"
+               target="_blank"
+               class="btn btn-secondary btn-sm" style="width:auto;margin:0">
+              <i class="fa-solid fa-paperclip"></i>
+              View / Download ({{ ticket.attachment.rsplit('.',1)[-1].upper() }})
+            </a>
+          </div>
+        </div>
+        {% endif %}
       </div>
     </div>
-    <a href="{{ back_url }}" class="btn btn-secondary" style="width:auto"><i class="fa-solid fa-arrow-left"></i> Back</a>
+
+    {% if notifs %}
+    <div class="detail-card">
+      <div class="detail-header">
+        <h3><i class="fa-solid fa-bell" style="margin-right:.4rem"></i>Notifications</h3>
+      </div>
+      <div style="padding:0">
+        {% for n in notifs %}
+        <div style="padding:.75rem 1.4rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.8rem;font-size:.88rem">
+          <i class="fa-solid fa-circle-dot"
+             style="color:{% if n.is_read %}var(--muted){% else %}var(--student){% endif %};font-size:.55rem;flex-shrink:0"></i>
+          <span style="flex:1">{{ n.message }}</span>
+          <span style="color:var(--muted);font-size:.78rem;white-space:nowrap">
+            {{ n.created_at.strftime('%b %d, %H:%M') }}
+          </span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    <a href="{{ back_url }}" class="btn btn-secondary" style="width:auto">
+      <i class="fa-solid fa-arrow-left"></i> Back
+    </a>
   </main>
 </div>
 {% endblock %}

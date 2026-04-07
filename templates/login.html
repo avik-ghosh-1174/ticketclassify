@@ -5,6 +5,8 @@
 {% endblock %}
 {% block body %}
 <div class="auth-wrapper">
+
+  
   <div class="auth-art auth-art-{{ role }}">
     <div class="auth-art-grid"></div>
     <div class="auth-art-glow"></div>
@@ -45,11 +47,13 @@
       </div>
     </div>
   </div>
+
+  
   <div class="auth-form-side">
     <div class="auth-card">
 
       <div class="auth-card-tag auth-card-tag-{{ role }}">
-        {% if role == 'admin' %}🛡 Admin
+        {% if role == 'admin' %}🛡️ Admin
         {% elif role == 'hall_staff' %}🪖 Hall Staff
         {% else %}🎓 Student{% endif %}
       </div>

@@ -26,7 +26,7 @@
             <select name="role" id="roleSelect" onchange="toggleSpec()">
               <option value="student">🎓 Student</option>
               <option value="hall_staff">🪖 Hall Staff</option>
-              <option value="admin">🛡 Admin</option>
+              <option value="admin">🛡️ Admin</option>
             </select>
           </div>
           <div class="form-group"><label>Password</label>
@@ -36,16 +36,16 @@
           </div>
         </div>
 
-
+        <!-- Specialization — shown only for hall_staff -->
         <div class="form-group" id="specGroup" style="display:none">
           <label>Specialization <span style="color:var(--danger)">*</span></label>
           <select name="specialization" id="specSelect">
             <option value="" disabled selected>— Select specialization —</option>
             {% for key, label in spec_labels.items() %}
             <option value="{{ key }}">
-              {% if key=='electricity' %}⚡️{% elif key=='internet' %}🌐
+              {% if key=='electricity' %}⚡{% elif key=='internet' %}🌐
               {% elif key=='maintenance' %}🔧{% elif key=='cleanliness' %}🧹
-              {% elif key=='security' %}🛡{% else %}🪖{% endif %}
+              {% elif key=='security' %}🛡️{% else %}🪖{% endif %}
               {{ label }}
             </option>
             {% endfor %}
@@ -59,7 +59,7 @@
           <button type="submit" class="btn btn-primary" style="width:auto;padding:.75rem 2rem">
             <i class="fa-solid fa-user-plus"></i> Create
           </button>
-          <a href="{{ url_for('admin.manage_users') }}" class="btn btn-secondary">Cancel</a>
+          <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary">Cancel</a>
         </div>
       </form>
     </div>

@@ -26,11 +26,11 @@
             <td>
               {% if u.specialization %}
                 <span class="badge badge-{{ u.specialization }}">
-                  {% if u.specialization=='electricity' %}⚡️
+                  {% if u.specialization=='electricity' %}⚡
                   {% elif u.specialization=='internet' %}🌐
                   {% elif u.specialization=='maintenance' %}🔧
                   {% elif u.specialization=='cleanliness' %}🧹
-                  {% elif u.specialization=='security' %}🛡
+                  {% elif u.specialization=='security' %}🛡️
                   {% else %}🪖{% endif %}
                   {{ spec_labels[u.specialization] }}
                 </span>
