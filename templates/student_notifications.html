@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Notifications – TicketClassify{% endblock %}
+{% block body %}
+<div class="app-layout">
+  {% include "_sidebar_student.html" %}
+  <main class="main-content">
+    <div class="page-header"><h2>Notifications</h2><p>Updates about your submitted tickets</p></div>
+    {% if notifs %}
+    <div class="table-card">
+      <div class="table-header"><h3>All Notifications</h3></div>
+      {% for n in notifs %}
+      <div style="padding:.85rem 1.3rem;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:.9rem">
+        <i class="fa-solid fa-circle-dot"
+           style="color:{% if n.is_read %}var(--muted){% else %}var(--student){% endif %};margin-top:.3rem;font-size:.6rem;flex-shrink:0"></i>
+        <div style="flex:1">
+          <div style="font-size:.9rem;{% if not n.is_read %}font-weight:600{% endif %}">{{ n.message }}</div>
+          {% if n.ticket_title %}
+          <div style="font-size:.8rem;color:var(--muted);margin-top:.15rem">Ticket: {{ n.ticket_title }}</div>
+          {% endif %}
+        </div>
+        <div style="font-size:.78rem;color:var(--muted);white-space:nowrap">
+          {{ n.created_at.strftime('%b %d, %H:%M') }}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <i class="fa-solid fa-bell-slash"></i>
+      <p>No notifications yet.</p>
+    </div>
+    {% endif %}
+  </main>
+</div>
+{% endblock %}
