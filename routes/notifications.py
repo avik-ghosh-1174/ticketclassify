@@ -1,14 +1,11 @@
 import MySQLdb.cursors
 
 def _dict_cursor(db_connection):
-    """Always return a DictCursor regardless of connection defaults."""
+    
     return db_connection.cursor(MySQLdb.cursors.DictCursor)
 
 def auto_route_ticket(ticket_id, category, db_connection):
-    """
-    Find hall_staff with matching specialization.
-    Set ticket status to 'assigned' and send them a notification.
-    """
+    
     try:
         cur = _dict_cursor(db_connection)
         cur.execute(
@@ -41,7 +38,7 @@ def auto_route_ticket(ticket_id, category, db_connection):
         traceback.print_exc()
 
 def notify_student_on_update(ticket_id, new_status, db_connection):
-    """Notify the ticket owner whenever staff/admin changes the status."""
+    
     try:
         cur = _dict_cursor(db_connection)
         cur.execute(
@@ -65,7 +62,7 @@ def notify_student_on_update(ticket_id, new_status, db_connection):
         traceback.print_exc()
 
 def unread_count(user_id, db_connection):
-    """Return unread notification count for sidebar badge."""
+    
     try:
         cur = _dict_cursor(db_connection)
         cur.execute(

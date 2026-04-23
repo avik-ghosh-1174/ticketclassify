@@ -120,7 +120,7 @@ def manage_users():
     db = get_db(); cur = db.connection.cursor()
     cur.execute("SELECT id, full_name, email, role, specialization, created_at FROM users ORDER BY role, created_at DESC")
     users = cur.fetchall(); cur.close()
-    return render_template("admin_users.html", users=users, spec_labels=SPECIALIZATION_LABELS)
+    return render_template("admin_user.html", users=users, spec_labels=SPECIALIZATION_LABELS)
 
 @admin_bp.route("/users/create", methods=["GET","POST"])
 @admin_required
